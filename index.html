@@ -1,0 +1,1037 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ایلیا قاری | توسعه‌دهنده بک‌اند (PHP)</title>
+<meta name="description" content="ایلیا قاری، توسعه‌دهنده بک‌اند با تمرکز بر PHP، معماری MVC و توسعه API. نمونه‌کارها، مهارت‌ها و راه‌های تماس." />
+<meta name="theme-color" content="#00263a" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#f7f9fc" media="(prefers-color-scheme: light)" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%23006194'/%3E%3Ctext x='32' y='42' font-family='Arial,sans-serif' font-size='28' font-weight='700' fill='white' text-anchor='middle'%3EIQ%3C/text%3E%3C/svg%3E" />
+
+<!-- ======================================================================
+   فایل کاملاً ساده، تک‌فایلی و بدون ابزار build است.
+   بخش‌های اصلی با کامنت فارسی مشخص شده‌اند؛ برای ویرایش متن‌ها یا لینک‌ها
+   همین فایل را با هر ویرایشگر متنی باز کنید.
+   ====================================================================== -->
+
+<style>
+  /* ---------- فونت ---------- */
+  @font-face{
+    font-family:"Vazirmatn"; font-weight:400; font-style:normal; font-display:swap;
+    src:url(https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-Regular.woff2) format("woff2");
+  }
+  @font-face{
+    font-family:"Vazirmatn"; font-weight:500; font-style:normal; font-display:swap;
+    src:url(https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-Medium.woff2) format("woff2");
+  }
+  @font-face{
+    font-family:"Vazirmatn"; font-weight:700; font-style:normal; font-display:swap;
+    src:url(https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-Bold.woff2) format("woff2");
+  }
+  @font-face{
+    font-family:"Vazirmatn"; font-weight:800; font-style:normal; font-display:swap;
+    src:url(https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-Black.woff2) format("woff2");
+  }
+
+  /* ----------------------------------------------------------------
+     رنگ‌ها: حالت روشن (پیش‌فرض) و تیره
+     رنگ اصلی (primary) همان آبی برند سایت قبلی شماست.
+     برای تغییر پالت رنگی، فقط همین متغیرها را عوض کنید.
+     ---------------------------------------------------------------- */
+  :root{
+    --primary:#006194;
+    --primary-ink:#ffffff;
+    --canvas:#f7f9fc;
+    --surface:#ffffff;
+    --surface-muted:#eef3fa;
+    --border:#dde6f0;
+    --ink:#101828;
+    --ink-muted:#48566b;
+    --shadow: 0 10px 30px rgba(16,24,40,.06);
+    --header-h: 4.5rem;
+  }
+  html.dark{
+    --primary:#7dc4ff;
+    --primary-ink:#00263a;
+    --canvas:#0e182a;
+    --surface:#111a2b;
+    --surface-muted:#1a2436;
+    --border:#26324a;
+    --ink:#f1f5f9;
+    --ink-muted:#94a3b8;
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:.001ms !important; transition-duration:.001ms !important;}
+  }
+  body{
+    margin:0;
+    font-family:"Vazirmatn", ui-sans-serif, system-ui, sans-serif;
+    background:
+      radial-gradient(60rem 30rem at 15% -10%, color-mix(in srgb, var(--primary) 8%, transparent), transparent 60%),
+      radial-gradient(50rem 25rem at 100% 0%, color-mix(in srgb, var(--primary) 6%, transparent), transparent 60%),
+      var(--canvas);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    transition:background-color .3s, color .3s;
+  }
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block;}
+  ul{list-style:none; margin:0; padding:0;}
+  h1,h2,h3,h4,p{margin:0;}
+  :focus-visible{ outline:2px solid var(--primary); outline-offset:3px; border-radius:.25rem; }
+
+  .wrap{max-width:72rem; margin-inline:auto; padding-inline:1.25rem;}
+  @media(min-width:768px){ .wrap{padding-inline:1.5rem;} }
+
+  .card{
+    background:color-mix(in srgb, var(--surface) 80%, transparent);
+    border:1px solid var(--border);
+    border-radius:1.25rem;
+    backdrop-filter:blur(10px);
+    box-shadow:var(--shadow);
+  }
+
+  /* ---------- هدر و ناوبری ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:color-mix(in srgb, var(--surface) 70%, transparent);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border);
+  }
+  .nav-inner{
+    height:var(--header-h);
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  }
+  .brand{ font-weight:800; font-size:1.125rem; color:var(--primary); }
+  .nav-links{ display:none; align-items:center; gap:2rem; }
+  .nav-links a{
+    font-size:.9rem; font-weight:500; color:var(--ink-muted);
+    padding-block:.35rem; border-bottom:2px solid transparent;
+    transition:color .2s, border-color .2s;
+  }
+  .nav-links a:hover, .nav-links a:focus-visible{ color:var(--primary); }
+  .nav-links a.active{ color:var(--primary); border-color:var(--primary); }
+  @media(min-width:860px){ .nav-links{ display:flex; } }
+
+  .nav-actions{ display:flex; align-items:center; gap:.5rem; }
+  .icon-btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:2.5rem; height:2.5rem; border-radius:9999px;
+    border:1px solid var(--border); background:transparent; color:var(--ink-muted);
+    cursor:pointer; transition:all .2s;
+  }
+  .icon-btn:hover{ color:var(--primary); border-color:color-mix(in srgb, var(--primary) 50%, transparent); }
+  .icon-btn svg{ width:1.15rem; height:1.15rem; }
+  .theme-toggle .icon-moon{display:none;}
+  html.dark .theme-toggle .icon-sun{display:none;}
+  html.dark .theme-toggle .icon-moon{display:block;}
+
+  .contact-btn{
+    display:none; align-items:center; gap:.4rem;
+    background:var(--primary); color:var(--primary-ink);
+    padding:.55rem 1.1rem; border-radius:9999px; font-size:.85rem; font-weight:600;
+    transition:filter .2s;
+  }
+  .contact-btn:hover{ filter:brightness(1.08); }
+  @media(min-width:860px){ .contact-btn{ display:inline-flex; } }
+
+  .menu-btn{ display:inline-flex; }
+  @media(min-width:860px){ .menu-btn{ display:none; } }
+
+  .mobile-nav{
+    display:none; flex-direction:column; gap:.25rem;
+    border-top:1px solid var(--border);
+    padding:1rem 1.25rem 1.5rem;
+    background:color-mix(in srgb, var(--surface) 96%, transparent);
+  }
+  .mobile-nav.open{ display:flex; }
+  .mobile-nav a{ padding:.65rem .25rem; font-size:.95rem; color:var(--ink-muted); }
+  .mobile-nav a:hover{ color:var(--primary); }
+  @media(min-width:860px){ .mobile-nav{ display:none !important; } }
+
+  section{ scroll-margin-top:calc(var(--header-h) + 1rem); }
+
+  /* ---------- بخش معرفی ---------- */
+  .hero{
+    padding-block:5rem 4rem;
+    display:flex; flex-direction:column-reverse; align-items:center; gap:3rem;
+  }
+  @media(min-width:900px){ .hero{ flex-direction:row; justify-content:space-between; padding-block:6rem; } }
+
+  .hero-photo-wrap{ position:relative; width:14rem; height:14rem; flex:none; }
+  @media(min-width:768px){ .hero-photo-wrap{ width:19rem; height:19rem; } }
+  .hero-photo-wrap::before{
+    content:""; position:absolute; inset:0; border-radius:1.75rem;
+    background:color-mix(in srgb, var(--primary) 18%, transparent);
+    transform:rotate(6deg); z-index:0;
+  }
+  .hero-photo-wrap img{
+    position:relative; z-index:1; width:100%; height:100%; object-fit:cover;
+    border-radius:1.75rem; border:4px solid var(--surface); box-shadow:var(--shadow);
+  }
+
+  .hero-text{ flex:1; text-align:center; }
+  @media(min-width:900px){ .hero-text{ text-align:start; } }
+  .eyebrow{ font-size:.9rem; font-weight:600; letter-spacing:.05em; color:var(--primary); margin-bottom:.75rem; }
+  .hero h1{
+    font-size:2rem; font-weight:800; line-height:1.25; margin-bottom:1.25rem; letter-spacing:-.01em;
+    background:linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 55%, var(--ink)));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  @media(min-width:768px){ .hero h1{ font-size:2.75rem; } }
+  .hero .lede{ font-size:1.05rem; color:var(--ink-muted); line-height:1.9; max-width:38rem; margin:0 auto 2rem; }
+  @media(min-width:900px){ .hero .lede{ margin-inline:0; } }
+
+  .social-row{ display:flex; flex-wrap:wrap; gap:.85rem; justify-content:center; }
+  @media(min-width:900px){ .social-row{ justify-content:flex-start; } }
+  .social-btn{
+    width:2.85rem; height:2.85rem; border-radius:9999px;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--primary); transition:all .25s;
+  }
+  .social-btn svg{ width:1.35rem; height:1.35rem; }
+  .social-btn:hover{ background:var(--primary); color:var(--primary-ink); transform:translateY(-2px); }
+
+  /* ---------- بخش‌ها به‌طور کلی ---------- */
+  section.block{ padding-block:4.5rem; }
+  .block.tinted{ background:color-mix(in srgb, var(--surface-muted) 70%, transparent); border-block:1px solid var(--border); }
+  .section-head{ margin-bottom:2.75rem; }
+  .section-head h2{ font-size:1.75rem; font-weight:700; }
+  .section-head p{ color:var(--ink-muted); margin-top:.5rem; }
+  .section-head.center{ text-align:center; }
+
+  /* ---------- درباره من ---------- */
+  .about-card{ display:flex; flex-direction:column; gap:2.5rem; padding:2rem; }
+  @media(min-width:860px){ .about-card{ flex-direction:row; align-items:center; padding:2.75rem; } }
+  .about-body h2{ font-size:1.5rem; font-weight:700; margin-bottom:1.25rem; }
+  .about-body p{ color:var(--ink-muted); line-height:2; margin-bottom:1rem; }
+  .about-stats{ display:grid; grid-template-columns:repeat(2,1fr); gap:.85rem; }
+  @media(min-width:860px){ .about-stats{ width:14rem; flex:none; } }
+  .stat{
+    background:var(--surface); border:1px solid var(--border); border-radius:1rem;
+    padding:.9rem; text-align:center;
+  }
+  .stat .big{ color:var(--primary); font-weight:700; font-size:1.1rem; }
+  .stat .small{ font-size:.75rem; color:var(--ink-muted); margin-top:.15rem; }
+
+  /* ---------- مهارت‌ها ---------- */
+  .skills-grid{ display:grid; grid-template-columns:1fr; gap:1.5rem; }
+  @media(min-width:640px){ .skills-grid{ grid-template-columns:1fr 1fr; } }
+  @media(min-width:1024px){ .skills-grid{ grid-template-columns:repeat(3,1fr); } }
+  .skill-card{ padding:1.75rem; transition:box-shadow .3s, border-color .3s; }
+  .skill-card:hover{ border-color:color-mix(in srgb, var(--primary) 40%, transparent); }
+  .skill-card .icon{
+    width:2.75rem; height:2.75rem; border-radius:.9rem; margin-bottom:1.25rem;
+    display:flex; align-items:center; justify-content:center;
+    background:color-mix(in srgb, var(--primary) 12%, transparent); color:var(--primary);
+  }
+  .skill-card .icon svg{ width:1.4rem; height:1.4rem; }
+  .skill-card h3{ font-size:1.05rem; font-weight:700; margin-bottom:.9rem; }
+  .skill-card ul{ display:flex; flex-direction:column; gap:.55rem; }
+  .skill-card li{ display:flex; align-items:center; gap:.6rem; color:var(--ink-muted); font-size:.9rem; }
+  .skill-card li::before{ content:""; width:.4rem; height:.4rem; border-radius:9999px; background:var(--primary); flex:none; }
+  .skill-card.wide{ grid-column:1 / -1; }
+  @media(min-width:1024px){ .skill-card.wide{ grid-column:span 2; } }
+  .skill-card.wide p{ color:var(--ink-muted); line-height:1.8; margin-bottom:1.1rem; }
+  .pill-row{ display:flex; flex-wrap:wrap; gap:.6rem; }
+  .pill{
+    font-size:.78rem; font-weight:600; padding:.35rem .8rem; border-radius:9999px;
+    background:color-mix(in srgb, var(--primary) 12%, transparent); color:var(--primary);
+  }
+
+  /* ---------- پروژه‌ها ---------- */
+  .projects-grid{ display:grid; grid-template-columns:1fr; gap:2rem; }
+  @media(min-width:768px){ .projects-grid{ grid-template-columns:1fr 1fr; } }
+  .project-card{
+    display:block; width:100%; padding:0; overflow:hidden; text-align:inherit;
+    color:inherit; font:inherit; cursor:pointer; appearance:none;
+    transition:transform .25s, border-color .25s, box-shadow .25s;
+  }
+  .project-card:hover,
+  .project-card:focus-visible{
+    transform:translateY(-4px);
+    border-color:color-mix(in srgb, var(--primary) 45%, transparent);
+    box-shadow:0 18px 45px rgba(16,24,40,.10);
+  }
+  .project-image{ height:14rem; overflow:hidden; position:relative; background:var(--surface-muted); }
+  .project-image img{ width:100%; height:100%; object-fit:cover; transition:transform .5s; }
+  .project-card:hover .project-image img,
+  .project-card:focus-visible .project-image img{ transform:scale(1.06); }
+  .project-overlay{
+    position:absolute; inset:auto 1rem 1rem auto;
+    display:inline-flex; align-items:center; gap:.45rem;
+    padding:.48rem .8rem; border-radius:9999px;
+    background:rgba(15,23,42,.72); color:#fff; font-size:.78rem; font-weight:600;
+    backdrop-filter:blur(8px);
+    opacity:0; transform:translateY(6px); transition:opacity .25s, transform .25s;
+  }
+  .project-overlay svg{ width:1rem; height:1rem; }
+  .project-card:hover .project-overlay,
+  .project-card:focus-visible .project-overlay{ opacity:1; transform:translateY(0); }
+  .project-body{ padding:1.75rem; }
+  .project-body h3{ font-size:1.2rem; font-weight:700; margin-bottom:.65rem; }
+  .project-body p{ color:var(--ink-muted); line-height:1.8; margin-bottom:1.25rem; font-size:.92rem; }
+  .tag-outline{
+    font-size:.78rem; font-weight:600; padding:.3rem .7rem; border-radius:.5rem;
+    border:1px solid color-mix(in srgb, var(--primary) 30%, transparent); color:var(--primary);
+  }
+  .tag-row{ display:flex; flex-wrap:wrap; gap:.5rem; }
+
+  /* ---------- گالری پروژه‌ها ---------- */
+  [hidden]{ display:none !important; }
+  body.gallery-open{ overflow:hidden; }
+  .gallery-modal{
+    position:fixed; inset:0; z-index:100;
+    display:flex; align-items:center; justify-content:center;
+    padding:1rem;
+    background:rgba(2,8,23,.78);
+    backdrop-filter:blur(14px);
+  }
+  .gallery-dialog{
+    position:relative; width:min(72rem, 100%); max-height:min(92vh, 54rem);
+    display:flex; flex-direction:column; overflow:hidden;
+    border:1px solid color-mix(in srgb, #fff 14%, transparent);
+    border-radius:1.35rem; background:var(--surface);
+    box-shadow:0 28px 90px rgba(0,0,0,.35);
+  }
+  .gallery-header{
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:.95rem 1rem; border-bottom:1px solid var(--border);
+  }
+  .gallery-heading{ min-width:0; }
+  .gallery-title{ font-size:1rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .gallery-meta{ margin-top:.15rem; color:var(--ink-muted); font-size:.76rem; }
+  .gallery-close,
+  .gallery-nav{
+    width:2.65rem; height:2.65rem; flex:none;
+    display:inline-flex; align-items:center; justify-content:center;
+    border:1px solid var(--border); border-radius:9999px;
+    background:color-mix(in srgb, var(--surface) 88%, transparent); color:var(--ink);
+    cursor:pointer; transition:transform .2s, color .2s, border-color .2s, background .2s;
+  }
+  .gallery-close:hover,
+  .gallery-nav:hover{ color:var(--primary); border-color:color-mix(in srgb, var(--primary) 45%, transparent); }
+  .gallery-close:active,
+  .gallery-nav:active{ transform:scale(.96); }
+  .gallery-close svg,
+  .gallery-nav svg{ width:1.2rem; height:1.2rem; }
+  .gallery-stage{
+    position:relative; min-height:18rem; display:flex; align-items:center; justify-content:center;
+    padding:1rem 4.1rem; background:color-mix(in srgb, var(--canvas) 92%, #000 8%);
+  }
+  .gallery-main{
+    display:block; width:auto; height:auto; max-width:100%; max-height:58vh;
+    object-fit:contain; border-radius:.85rem; user-select:none;
+    box-shadow:0 18px 55px rgba(0,0,0,.22);
+  }
+  .gallery-nav{ position:absolute; top:50%; transform:translateY(-50%); z-index:2; }
+  .gallery-nav:hover{ transform:translateY(-50%) scale(1.03); }
+  .gallery-prev{ inset-inline-start:1rem; }
+  .gallery-next{ inset-inline-end:1rem; }
+  .gallery-thumbs{
+    display:flex; gap:.7rem; overflow-x:auto; padding:.8rem 1rem 1rem;
+    border-top:1px solid var(--border); background:var(--surface);
+    scrollbar-width:thin;
+  }
+  .gallery-thumb{
+    width:5.25rem; height:4rem; flex:none; padding:0; overflow:hidden;
+    border:2px solid transparent; border-radius:.7rem; background:var(--surface-muted);
+    cursor:pointer; opacity:.65; transition:opacity .2s, border-color .2s, transform .2s;
+  }
+  .gallery-thumb:hover{ opacity:.9; }
+  .gallery-thumb.active{ opacity:1; border-color:var(--primary); transform:translateY(-1px); }
+  .gallery-thumb img{ width:100%; height:100%; object-fit:cover; }
+  @media(max-width:640px){
+    .gallery-modal{ padding:.5rem; }
+    .gallery-dialog{ max-height:96vh; border-radius:1rem; }
+    .gallery-header{ padding:.8rem; }
+    .gallery-stage{ min-height:15rem; padding:.75rem 3.4rem; }
+    .gallery-main{ max-height:56vh; border-radius:.65rem; }
+    .gallery-nav{ width:2.35rem; height:2.35rem; }
+    .gallery-prev{ inset-inline-start:.7rem; }
+    .gallery-next{ inset-inline-end:.7rem; }
+    .gallery-thumb{ width:4.55rem; height:3.45rem; }
+  }
+  @media(prefers-reduced-motion:reduce){
+    .project-card,
+    .project-image img,
+    .project-overlay,
+    .gallery-close,
+    .gallery-nav,
+    .gallery-thumb{ transition:none; }
+  }
+
+  /* ---------- تحصیلات و گواهینامه‌ها ---------- */
+  .edu-cert-grid{ display:grid; grid-template-columns:1fr; gap:3.5rem; }
+  @media(min-width:860px){ .edu-cert-grid{ grid-template-columns:1fr 1fr; } }
+  .subsection-title{ font-size:1.4rem; font-weight:700; margin-bottom:2rem; }
+
+  .timeline{ position:relative; border-inline-start:2px solid color-mix(in srgb, var(--primary) 25%, transparent); padding-inline-start:2rem; display:flex; flex-direction:column; gap:2.5rem; }
+  .timeline-item{ position:relative; }
+  .timeline-dot{
+    position:absolute; inset-inline-start:-2.6rem; top:.2rem;
+    width:1rem; height:1rem; border-radius:9999px; border:3px solid var(--canvas);
+    background:color-mix(in srgb, var(--primary) 35%, transparent);
+  }
+  .timeline-dot.active{ background:var(--primary); }
+  .timeline-item .year{ font-size:.8rem; font-weight:700; color:var(--primary); margin-bottom:.4rem; }
+  .timeline-item h4{ font-size:1.05rem; font-weight:700; margin-bottom:.4rem; }
+  .timeline-item p{ color:var(--ink-muted); line-height:1.75; font-size:.92rem; }
+
+  .cert-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  .cert-card{ padding:1rem; }
+  .cert-image{ height:7rem; border-radius:.85rem; overflow:hidden; margin-bottom:.9rem; background:var(--surface-muted); }
+  .cert-image img{ width:100%; height:100%; object-fit:cover; }
+  .cert-card h4{ font-size:.82rem; font-weight:600; text-align:center; line-height:1.6; }
+
+  /* ---------- فوتر ---------- */
+  footer{ border-top:1px solid var(--border); padding-block:3rem; }
+  .footer-inner{ display:flex; flex-direction:column; align-items:center; gap:1.5rem; text-align:center; }
+  @media(min-width:768px){ .footer-inner{ flex-direction:row; justify-content:space-between; text-align:start; } }
+  .footer-brand{ font-weight:800; color:var(--primary); }
+  .footer-copy{ font-size:.85rem; color:var(--ink-muted); }
+  .footer-links{ display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center; }
+  .footer-links a{ font-size:.85rem; color:var(--ink-muted); }
+  .footer-links a:hover{ color:var(--primary); }
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     هدر و ناوبری
+     ========================================================= -->
+<header>
+  <div class="wrap nav-inner">
+    <a href="#hero" class="brand">Iliya<span style="color:var(--ink)"></span>QI</a>
+
+    <nav class="nav-links" aria-label="ناوبری اصلی">
+      <a href="#about">درباره</a>
+      <a href="#skills">مهارت‌ها</a>
+      <a href="#projects">نمونه‌کارها</a>
+      <a href="#education">تحصیلات</a>
+    </nav>
+
+    <div class="nav-actions">
+      <a class="contact-btn" href="mailto:Iliya.Qary@gmail.com">تماس با من</a>
+      <button class="icon-btn theme-toggle" id="themeToggle" aria-label="تغییر تم روشن/تیره" title="تغییر تم">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" id="menuToggle" aria-label="باز کردن منو" aria-expanded="false" aria-controls="mobileNav">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <nav class="mobile-nav" id="mobileNav" aria-label="ناوبری موبایل">
+    <a href="#about">درباره</a>
+    <a href="#skills">مهارت‌ها</a>
+    <a href="#projects">نمونه‌کارها</a>
+    <a href="#education">تحصیلات</a>
+    <a href="mailto:Iliya.Qary@gmail.com">تماس با من</a>
+  </nav>
+</header>
+
+<main>
+  <!-- =========================================================
+       معرفی — عکس، نام، عنوان شغلی، توضیح کوتاه و لینک‌های تماس
+       ========================================================= -->
+  <section class="hero wrap" id="hero">
+    <div class="hero-photo-wrap">
+      <img src="assets/img/profile.jpg" alt="عکس پروفایل ایلیا قاری" width="304" height="304" />
+    </div>
+
+    <div class="hero-text">
+      <p class="eyebrow">سلام، من ایلیا هستم</p>
+      <h1>برنامه‌نویس بک‌اند (PHP Developer)</h1>
+      <p class="lede">توسعه بک‌اند با PHP، طراحی فریم‌ورک‌های MVC سفارشی و پیاده‌سازی APIهای مقیاس‌پذیر، همراه با کدنویسی تمیز و حل چالش‌های پیچیده فنی.</p>
+
+      <!-- برای تغییر لینک‌های تماس، href ها را عوض کنید -->
+      <div class="social-row">
+        <a class="social-btn card" href="mailto:Iliya.Qary@gmail.com" aria-label="ایمیل">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        </a>
+        <a class="social-btn card" href="https://www.linkedin.com/in/iliya-qary-676a2b349" target="_blank" rel="noopener noreferrer" aria-label="لینکدین">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+        <a class="social-btn card" href="https://www.quora.com/profile/Iliya-1-1" target="_blank" rel="noopener noreferrer" aria-label="کوورا">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </a>
+        <a class="social-btn card" href="https://t.me/IliyaQI" target="_blank" rel="noopener noreferrer" aria-label="تلگرام">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       درباره من
+       ========================================================= -->
+  <section class="block tinted" id="about">
+    <div class="wrap">
+      <div class="card about-card">
+        <div class="about-body">
+          <h2>درباره من و مسیر حرفه‌ای</h2>
+          <p>تمرکز اصلی من در سال‌های اخیر روی عمیق شدن در مفاهیم اصلی PHP و مهندسی نرم‌افزار بوده است. به‌جای تکیه صرف بر فریم‌ورک‌ها، یک مینی‌فریم‌ورک اختصاصی با سیستم Routing و ORM ساده طراحی کردم تا درک عمیقی از معماری MVC پیدا کنم.</p>
+          <p>علاوه بر این، کتابخانه‌های اختصاصی برای کار با Telegram Bot API توسعه داده‌ام که در پروژه‌های مختلفی برای خودکارسازی فرآیندها استفاده شده‌اند. هدف من همیشه نوشتن کدی است که نه‌تنها کار می‌کند، بلکه قابل نگهداری و توسعه است.</p>
+        </div>
+        <div class="about-stats">
+          <div class="stat"><div class="big">PHP</div><div class="small">برنامه‌نویس</div></div>
+          <div class="stat"><div class="big">MVC</div><div class="small">با معماری</div></div>
+          <div class="stat"><div class="big">API</div><div class="small">توسعه</div></div>
+          <div class="stat"><div class="big">Database</div><div class="small">طراحی</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       مهارت‌ها
+       ========================================================= -->
+  <section class="block" id="skills">
+    <div class="wrap">
+      <div class="section-head center">
+        <h2>مهارت‌های من</h2>
+      </div>
+      <div class="skills-grid">
+
+        <div class="card skill-card">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+          <h3>زبان‌ها و فریم‌ورک‌ها</h3>
+          <ul>
+            <li>PHP خالص (Core)، CodeIgniter 4</li>
+            <li>JavaScript، jQuery</li>
+            <li>وردپرس، طراحی قالب</li>
+          </ul>
+        </div>
+
+        <div class="card skill-card">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 1 0-18 0"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 4 9 15 15 0 0 1-4 9 15 15 0 0 1-4-9 15 15 0 0 1 4-9Z"/></svg></div>
+          <h3>مفاهیم بنیادی</h3>
+          <ul>
+            <li>SOLID، Design Patterns</li>
+            <li>OOP، MVC، REST API</li>
+            <li>JWT، امنیت وب</li>
+          </ul>
+        </div>
+
+        <div class="card skill-card">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+          <h3>پایگاه داده</h3>
+          <ul>
+            <li>SQL، MySQL</li>
+            <li>SQLite</li>
+            <li>طراحی اسکیمای پایگاه‌داده</li>
+          </ul>
+        </div>
+
+        <div class="card skill-card wide">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></div>
+          <h3>Telegram Bot API</h3>
+          <p>ایجاد کتابخانه‌های سفارشی برای مدیریت ربات‌ها با تمرکز بر سرعت و امنیت.</p>
+          <div class="pill-row">
+            <span class="pill">Webhook</span>
+            <span class="pill">Custom Middleware</span>
+            <span class="pill">Bot Automation</span>
+          </div>
+        </div>
+
+        <div class="card skill-card">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+          <h3>ابزارها و فرانت‌اند</h3>
+          <ul>
+            <li>Tailwind CSS، HTML/CSS</li>
+            <li>Git/GitHub، Composer، Docker</li>
+            <li>Curl</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       نمونه‌کارها
+       ========================================================= -->
+  <section class="block tinted" id="projects">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>نمونه‌کارها</h2>
+        <!-- <p>بسیاری از پروژه‌های انجام‌شده شخصی بوده و یا غیرقابل بازنشر هستند.</p> -->
+      </div>
+      <div class="projects-grid">
+
+        <!-- هر کارت به گالری مربوط به خودش در اسکریپت پایین متصل است. -->
+        <button class="card project-card" type="button" data-project="mvc" aria-haspopup="dialog" aria-label="مشاهده گالری فریم‌ورک  MVC">
+          <div class="project-image">
+            <img src="assets/img/banner.png" alt="فریم‌ورک MVC" loading="lazy" />
+            <span class="project-overlay" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+              مشاهده گالری
+            </span>
+          </div>
+          <div class="project-body">
+            <h3>مینی فریم‌ورک MVC</h3>
+            <p>طراحی و پیاده‌سازی یک هسته MVC سفارشی با تمرکز بر Routing، ساختار لایه‌ای و یک ORM ساده برای کار با پایگاه‌داده.</p>
+            <div class="tag-row">
+              <!-- <span class="tag-outline">PHP</span>
+              <span class="tag-outline">MySQL</span>
+              <span class="tag-outline">Architecture</span> -->
+            </div>
+          </div>
+        </button>
+
+        <button class="card project-card" type="button" data-project="telegram" aria-haspopup="dialog" aria-label="مشاهده گالری ربات تلگرام">
+          <div class="project-image">
+            <img src="assets/img/downloaderbot.png" alt="ربات تلگرام؛ ربات دانلود و مدیریت گروه‌ها و کانال‌ها" loading="lazy" />
+            <span class="project-overlay" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+              مشاهده گالری
+            </span>
+          </div>
+          <div class="project-body">
+            <h3>ربات تلگرام</h3>
+            <p>مجموعه‌ای از قابلیت‌های رباتی برای مدیریت گروه‌ها و کانال‌ها و همچنین دانلود ویدئو و کلیپ از لینک اشتراک‌گذاری برخی پلتفرم‌های داخلی.</p>
+            <div class="tag-row">
+              <!-- <span class="tag-outline">Telegram Bot API</span>
+              <span class="tag-outline">Automation</span>
+              <span class="tag-outline">PHP</span> -->
+            </div>
+          </div>
+        </button>
+
+        <button class="card project-card" type="button" data-project="news" aria-haspopup="dialog" aria-label="مشاهده گالری خبرگذاری مدرن">
+          <div class="project-image">
+            <img src="assets/img/news-main.png" alt="صفحه اصلی سایت خبرگذاری مدرن" loading="lazy" />
+            <span class="project-overlay" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+              مشاهده گالری
+            </span>
+          </div>
+          <div class="project-body">
+            <h3>خبرگذاری مدرن</h3>
+            <p>طراحی و پیاده‌سازی رابط یک وب‌سایت خبری با تمرکز بر نمایش ساختاریافته مطالب، بخش‌های خبری و تجربه کاربری ساده و خوانا.</p>
+            <div class="tag-row">
+              <!-- <span class="tag-outline">PHP</span>
+              <span class="tag-outline">HTML/CSS</span>
+              <span class="tag-outline">JavaScript</span> -->
+            </div>
+          </div>
+        </button>
+
+        <button class="card project-card" type="button" data-project="cafe" aria-haspopup="dialog" aria-label="مشاهده گالری وب‌سایت کافی‌شاپ">
+          <div class="project-image">
+            <img src="assets/img/main-cafe.png" alt="صفحه اصلی وب‌سایت کافی‌شاپ" loading="lazy" />
+            <span class="project-overlay" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+              مشاهده گالری
+            </span>
+          </div>
+          <div class="project-body">
+            <h3>وب‌سایت کافی‌شاپ</h3>
+            <p>طراحی یک سایت کافی‌شاپ با منو، صفحه ورود کاربران و سبد خرید برای نمایش و انتخاب محصولات.</p>
+            <div class="tag-row">
+              <!-- <span class="tag-outline">PHP</span>
+              <span class="tag-outline">E-commerce</span>
+              <span class="tag-outline">JavaScript</span> -->
+            </div>
+          </div>
+        </button>
+
+        <button class="card project-card" type="button" data-project="saffronslatte" aria-haspopup="dialog" aria-label="مشاهده گالری قالب وردپرس کافی‌شاپ Saffron Slatte">
+          <div class="project-image">
+            <img src="assets/img/main2-safrronSlate.png" alt="قالب اختصاصی وردپرس کافی‌شاپ Saffron Slatte - تصویر اصلی" loading="lazy" />
+            <span class="project-overlay" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+              مشاهده گالری
+            </span>
+          </div>
+          <div class="project-body">
+            <h3>طراحی قالب اختصاصی وردپرس</h3>
+            <p>طراحی و توسعه‌ی یک قالب کافی‌شاپی(Saffron Slatte) اختصاصی وردپرس از صفر، شامل پست‌تایپ‌های سفارشی برای منو و اتاق‌ها/رزرو، تعریف نقش‌ها و سطوح دسترسی جداگانه ، پنل مدیریت کامل تمام بخش ها، ثبت‌نام و ورود با کد تایید پیامکی، و سبد خرید + مالیات و...</p>
+            <div class="tag-row">
+              <!-- <span class="tag-outline">WordPress</span>
+              <span class="tag-outline">PHP</span>
+              <span class="tag-outline">Custom Post Types</span>
+              <span class="tag-outline">Roles & Capabilities</span> -->
+            </div>
+          </div>
+        </button>
+
+        <button class="card project-card" type="button" data-project="weblog" aria-haspopup="dialog" aria-label="مشاهده گالری وب‌سایت پورتفولیو">
+          <div class="project-image">
+            <img src="assets/img/weblog-main.png" alt="وب‌سایت پورتفولیو نمونه" loading="lazy" />
+            <span class="project-overlay" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+              مشاهده گالری
+            </span>
+          </div>
+          <div class="project-body">
+            <h3>وب‌سایت پورتفولیو</h3>
+            <p>طراحی و پیاده‌سازی یک وب‌سایت نمونه پورتفولیو با تمرکز بر ارائه مرتب اطلاعات، پروژه‌ها و بخش‌های معرفی.</p>
+            <div class="tag-row">
+              <!-- <span class="tag-outline">HTML/CSS</span>
+              <span class="tag-outline">JavaScript</span>
+              <span class="tag-outline">Responsive</span> -->
+            </div>
+          </div>
+        </button>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       تحصیلات و گواهینامه‌ها
+       ========================================================= -->
+  <section class="block" id="education">
+    <div class="wrap edu-cert-grid">
+
+      <div>
+        <h2 class="subsection-title">تحصیلات</h2>
+        <div class="timeline">
+          <div class="timeline-item">
+            <span class="timeline-dot active"></span>
+            <div class="year">۱۴۰۳ - تاکنون</div>
+            <h4>در حال یادگیری</h4>
+            <p>علاقه‌مند به حوزه توسعه وب، همراه با گذراندن دوره‌های آموزشی از منابع بروز و کسب تجربه های جدید</p>
+          </div>
+          <div class="timeline-item">
+            <span class="timeline-dot"></span>
+            <div class="year">در حال تحصیل</div>
+            <h4>هنرجوی کامپیوتر</h4>
+            <p>هنرستان فنی حرفه‌ای سمپاد امیرکبیر</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="subsection-title">گواهینامه‌ها</h2>
+        <div class="cert-grid">
+          <div class="card cert-card">
+            <div class="cert-image">
+              <img src="assets/img/certificate.png" alt="گواهی دوره توسعه وب" loading="lazy" />
+            </div>
+            <h4>+۱۰۰ ساعت دوره مبانی تا تخصصی توسعه وب و پایگاه داده</h4>
+          </div>
+          <div class="card cert-card">
+            <div class="cert-image">
+              <img src="assets/img/certificate.png" alt="گواهی دوره سمینار فناوری" loading="lazy" />
+            </div>
+            <h4>+۳۰ دوره سمینار حوزه فناوری از دانشگاه صنعتی شریف</h4>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- =========================================================
+     مودال گالری نمونه‌کارها
+     ========================================================= -->
+<div class="gallery-modal" id="galleryModal" hidden>
+  <div class="gallery-dialog" role="dialog" aria-modal="true" aria-labelledby="galleryTitle">
+    <div class="gallery-header">
+      <div class="gallery-heading">
+        <h2 class="gallery-title" id="galleryTitle">گالری پروژه</h2>
+        <div class="gallery-meta" id="galleryCounter" aria-live="polite">تصویر ۱ از ۱</div>
+      </div>
+      <button class="gallery-close" id="galleryClose" type="button" aria-label="بستن گالری" title="بستن (Esc)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="gallery-stage">
+      <button class="gallery-nav gallery-prev" id="galleryPrev" type="button" aria-label="تصویر قبلی" title="بعدی">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m10 6 6 6-6 6"/></svg>
+      </button>
+      <img class="gallery-main" id="galleryMain" src="" alt="" draggable="false" />
+      <button class="gallery-nav gallery-next" id="galleryNext" type="button" aria-label="تصویر بعدی" title="قبلی">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m14 6-6 6 6 6"/></svg>
+      </button>
+    </div>
+
+    <div class="gallery-thumbs" id="galleryThumbs" aria-label="تصاویر گالری"></div>
+  </div>
+</div>
+
+<!-- =========================================================
+     فوتر
+     ========================================================= -->
+<footer>
+  <div class="wrap footer-inner">
+    <div class="footer-brand">IliyaQI</div>
+    <p class="footer-copy" id="footerYear">© Backend Developer. Crafted with PHP &amp; Precision.</p>
+    <div class="footer-links">
+      <a href="mailto:Iliya.Qary@gmail.com">Email</a>
+      <a href="https://www.linkedin.com/in/iliya-qary-676a2b349" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      <a href="https://www.quora.com/profile/Iliya-1-1" target="_blank" rel="noopener noreferrer">Quora</a>
+      <a href="https://t.me/IliyaQI" target="_blank" rel="noopener noreferrer">Telegram</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // سال کپی‌رایت فوتر به‌صورت خودکار به‌روز می‌شود
+  document.getElementById('footerYear').textContent =
+    '© ' + new Date().getFullYear() + ' Backend Developer. Crafted with PHP & Precision.';
+
+  // تم روشن/تیره: بر اساس انتخاب قبلی کاربر یا تنظیمات سیستم
+  (function () {
+    var root = document.documentElement;
+    var toggle = document.getElementById('themeToggle');
+    var stored = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    root.classList.toggle('dark', stored === 'dark' || (!stored && prefersDark));
+
+    toggle.addEventListener('click', function () {
+      var nowDark = !root.classList.contains('dark');
+      root.classList.toggle('dark', nowDark);
+      localStorage.setItem('theme', nowDark ? 'dark' : 'light');
+    });
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+      if (!localStorage.getItem('theme')) root.classList.toggle('dark', e.matches);
+    });
+  })();
+
+  // منوی موبایل
+  (function () {
+    var btn = document.getElementById('menuToggle');
+    var nav = document.getElementById('mobileNav');
+    btn.addEventListener('click', function () {
+      var isOpen = nav.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(isOpen));
+    });
+    nav.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () {
+        nav.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      });
+    });
+  })();
+
+  // برجسته کردن لینک بخش فعال در ناوبری هنگام اسکرول
+  (function () {
+    var links = document.querySelectorAll('.nav-links a');
+    var sections = Array.from(links).map(function (l) {
+      return document.querySelector(l.getAttribute('href'));
+    }).filter(Boolean);
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var link = document.querySelector('.nav-links a[href="#' + entry.target.id + '"]');
+        if (!link) return;
+        if (entry.isIntersecting) {
+          links.forEach(function (l) { l.classList.remove('active'); });
+          link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-45% 0px -45% 0px' });
+
+    sections.forEach(function (s) { io.observe(s); });
+  })();
+
+  // گالری نمونه‌کارها
+  (function () {
+    /*
+      گالری هر پروژه اینجاست. برای اضافه کردن عکس‌های بیشتر، URL آنها را
+      به آرایه همان پروژه اضافه کنید. این ساختار کاملاً استاتیک است و با
+      GitHub Pages بدون نیاز به بک‌اند کار می‌کند.
+    */
+    var projectGalleries = {
+      mvc: {
+        title: 'mini MVC Freamwork',
+        images: [
+          { src: 'assets/img/banner.png', alt: 'فریم‌ورک سفارشی MVC - تصویر اصلی' }
+        ]
+      },
+      telegram: {
+        title: 'ربات تلگرام',
+        images: [
+          { src: 'assets/img/downloaderbot.png', alt: 'ربات دانلود ویدئو و کلیپ' },
+          { src: 'assets/img/telebot.png', alt: 'ربات مدیریت گروه‌ها و کانال‌ها' }
+        ]
+      },
+      news: {
+        title: 'خبرگذاری مدرن',
+        images: [
+          { src: 'assets/img/news-main.png', alt: 'خبرگذاری مدرن - صفحه اصلی' },
+          { src: 'assets/img/news-panel.png', alt: 'خبرگذاری مدرن - پنل' },
+          { src: 'assets/img/news-web2.png', alt: 'خبرگذاری مدرن - نمای دوم وب‌سایت' }
+        ]
+      },
+      cafe: {
+        title: 'وب‌سایت کافی‌شاپ',
+        images: [
+          { src: 'assets/img/main-cafe.png', alt: 'وب‌سایت کافی‌شاپ - صفحه اصلی' },
+          { src: 'assets/img/login-cafe.png', alt: 'وب‌سایت کافی‌شاپ - صفحه ورود' },
+          { src: 'assets/img/menu-cafe.png', alt: 'وب‌سایت کافی‌شاپ - منو' },
+          { src: 'assets/img/pay-cafe.png', alt: 'وب‌سایت کافی‌شاپ - سبد خرید و پرداخت' }
+        ]
+      },
+      weblog: {
+        title: 'وب‌سایت پورتفولیو',
+        images: [
+          { src: 'assets/img/weblog-main.png', alt: 'پورتفولیو - تصویر اصلی' },
+          { src: 'assets/img/weblog2.png', alt: 'پورتفولیو - تصویر 2' }
+        ]
+      },
+      saffronslatte: {
+        title: 'قالب کافی‌شاپی saffronslatte',
+        images: [
+          { src: 'assets/img/main-safrronSlate.png', alt: 'saffronslatte - تصویر اصلی' },
+          { src: 'assets/img/menu-safrronSlate.png', alt: 'saffronslatte - منو' },
+          { src: 'assets/img/home-safrronSlate.png', alt: 'saffronslatte - خانه' },
+          { src: 'assets/img/rooms-safrronSlate.png', alt: 'saffronslatte - اتاق ها' }
+        ]
+      }
+    };
+
+    var modal = document.getElementById('galleryModal');
+    var closeBtn = document.getElementById('galleryClose');
+    var prevBtn = document.getElementById('galleryPrev');
+    var nextBtn = document.getElementById('galleryNext');
+    var mainImage = document.getElementById('galleryMain');
+    var thumbs = document.getElementById('galleryThumbs');
+    var title = document.getElementById('galleryTitle');
+    var counter = document.getElementById('galleryCounter');
+    var activeGallery = null;
+    var activeIndex = 0;
+    var lastFocusedElement = null;
+    var touchStartX = null;
+
+    function toPersianNumber(value) {
+      return String(value).replace(/\d/g, function (digit) {
+        return '۰۱۲۳۴۵۶۷۸۹'[digit];
+      });
+    }
+
+    function renderGallery() {
+      if (!activeGallery) return;
+
+      var item = activeGallery.images[activeIndex];
+      title.textContent = activeGallery.title;
+      counter.textContent = 'تصویر ' + toPersianNumber(activeIndex + 1) + ' از ' + toPersianNumber(activeGallery.images.length);
+      mainImage.src = item.src;
+      mainImage.alt = item.alt || activeGallery.title;
+
+      thumbs.innerHTML = '';
+      activeGallery.images.forEach(function (image, index) {
+        var thumb = document.createElement('button');
+        thumb.type = 'button';
+        thumb.className = 'gallery-thumb' + (index === activeIndex ? ' active' : '');
+        thumb.setAttribute('aria-label', 'نمایش تصویر ' + toPersianNumber(index + 1));
+        thumb.setAttribute('aria-current', index === activeIndex ? 'true' : 'false');
+
+        var thumbImage = document.createElement('img');
+        thumbImage.src = image.src;
+        thumbImage.alt = '';
+        thumbImage.loading = 'lazy';
+        thumb.appendChild(thumbImage);
+
+        thumb.addEventListener('click', function () {
+          activeIndex = index;
+          renderGallery();
+        });
+        thumbs.appendChild(thumb);
+      });
+
+      var hasMultiple = activeGallery.images.length > 1;
+      prevBtn.hidden = !hasMultiple;
+      nextBtn.hidden = !hasMultiple;
+      thumbs.hidden = !hasMultiple;
+
+      if (activeGallery.images.length > 1) {
+        requestAnimationFrame(function () {
+          var activeThumb = thumbs.querySelector('.gallery-thumb.active');
+          if (activeThumb) activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        });
+      }
+    }
+
+    function openGallery(projectKey) {
+      var gallery = projectGalleries[projectKey];
+      if (!gallery || !gallery.images || !gallery.images.length) return;
+
+      activeGallery = gallery;
+      activeIndex = 0;
+      lastFocusedElement = document.activeElement;
+      renderGallery();
+      modal.hidden = false;
+      document.body.classList.add('gallery-open');
+      closeBtn.focus();
+    }
+
+    function closeGallery() {
+      modal.hidden = true;
+      document.body.classList.remove('gallery-open');
+      mainImage.removeAttribute('src');
+      thumbs.innerHTML = '';
+      activeGallery = null;
+      if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+        lastFocusedElement.focus();
+      }
+    }
+
+    function showRelative(offset) {
+      if (!activeGallery || activeGallery.images.length < 2) return;
+      activeIndex = (activeIndex + offset + activeGallery.images.length) % activeGallery.images.length;
+      renderGallery();
+    }
+
+    document.querySelectorAll('.project-card[data-project]').forEach(function (card) {
+      card.addEventListener('click', function () {
+        openGallery(card.getAttribute('data-project'));
+      });
+    });
+
+    closeBtn.addEventListener('click', closeGallery);
+    prevBtn.addEventListener('click', function () { showRelative(-1); });
+    nextBtn.addEventListener('click', function () { showRelative(1); });
+
+    modal.addEventListener('click', function (event) {
+      if (event.target === modal) closeGallery();
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (modal.hidden) return;
+      if (event.key === 'Escape') closeGallery();
+      if (event.key === 'ArrowLeft') showRelative(-1);
+      if (event.key === 'ArrowRight') showRelative(1);
+    });
+
+    modal.addEventListener('touchstart', function (event) {
+      touchStartX = event.changedTouches[0].screenX;
+    }, { passive: true });
+
+    modal.addEventListener('touchend', function (event) {
+      if (touchStartX === null || !activeGallery || activeGallery.images.length < 2) return;
+      var deltaX = event.changedTouches[0].screenX - touchStartX;
+      touchStartX = null;
+      if (Math.abs(deltaX) < 45) return;
+      showRelative(deltaX > 0 ? -1 : 1);
+    }, { passive: true });
+  })();
+</script>
+</body>
+</html>
